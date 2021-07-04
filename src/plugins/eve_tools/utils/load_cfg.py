@@ -13,5 +13,3 @@ def get_function_map() -> dict:
     with open(FUNCTION_MAP_PATH, 'r', encoding='utf-8') as f:
         func_dict = yaml.load(f, Loader=yaml.SafeLoader)
     return func_dict
-
-get_function_map()
