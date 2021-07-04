@@ -40,9 +40,6 @@ TYPE_REF = {
 FUNC_OPERATOR_ON = 'open'
 FUNC_OPERATOR_OFF = 'close'
 FUNC_RELOAD = 'reload'
-cfg = on_command('cfg')
-test_cfg = on_command('test')
-func_map = {'func': test_cfg}
 
 
 def init_mod():
@@ -74,6 +71,7 @@ def clear_functions():
     full_common_func_map.clear()
     common_func_map.clear()
     return '清空 [%s] 个功能\n' % str(func_num)
+
 
 def load_om_function():
     """加载超管权限功能"""
@@ -189,21 +187,6 @@ def load_function(item: dict):
         full_common_func_map[name] = item
         return True
     return False
-
-
-@cfg.handle()
-async def cmd_config(bot: Bot, event: GroupMessageEvent, state: T_State):
-    inputs = event.get_plaintext()
-    print(inputs)
-    await cfg.finish(inputs)
-
-
-@func_map['func'].handle()
-async def new_func(bot: Bot, event: GroupMessageEvent, state: T_State):
-    inputs = event.get_plaintext()
-    inputs += ' this is a test'
-    print(inputs)
-    await func_map['func'].finish(inputs)
 
 
 init_mod()
