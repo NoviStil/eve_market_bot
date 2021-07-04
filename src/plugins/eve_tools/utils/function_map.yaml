@@ -1,9 +1,9 @@
-- name: 'test_func'        # 方法名称
+- name: 'test_func'         # 方法名称
   cmd: 'on_command'         # 命令类型 on_command等
-  func_start: 'net'   #
-  mod: 'test.test_func'          # 依赖包
-  func: 'func'        # 入口函数名
-  event: 'group_msg_event'       # 事件类型
-  permission: ''  # 使用权限，系统默认
-  pms_modify:   # 使用自定义权限，需要自行实现 True/False
+  func_start: 'net'         #
+  mod: 'test.test_func'     # 依赖包
+  func: 'func'              # 入口函数名
+  event: 'group_msg_event'  # 事件类型
+  permission: ''            # 使用权限，系统默认
+  pms_modify:               # 使用自定义权限，需要自行实现 True/False
 
