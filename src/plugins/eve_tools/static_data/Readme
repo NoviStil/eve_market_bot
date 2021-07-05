@@ -1,0 +1,10 @@
++   本文件夹用于存放下载的静态压缩包和解压后的文件
++   以下文件位必备项
+    +   blueprints.yaml
+    +   categoryIDs.yaml
+    +   dogmaAttributes.yaml
+    +   groupIDs.yaml
+    +   typeDogma.yaml
+    +   typeIDs.yaml
+    +   dogmaAttributeCategories.yaml
+    +   iconIDs.yaml
