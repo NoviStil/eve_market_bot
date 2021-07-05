@@ -9,10 +9,16 @@
 -根据function_map加载扩展子功能
     -加载yaml配置文件
      动态定义响应函数
-
+"""
+"""
+加载的扩展方法的参数必须按以下格式
+event: 
+logger: 
+id和文本下沉到扩展功能内部处理
 """
 
 import importlib
+import logging
 
 from nonebot import on_command
 from nonebot.rule import to_me
@@ -24,7 +30,7 @@ from nonebot.adapters.cqhttp import Bot, Message, GroupMessageEvent, GROUP_ADMIN
 from src.plugins.eve_tools.utils.load_cfg import get_function_map, PACKAGE_PATH
 from src.plugins.eve_tools.utils.om import func_mod
 from src.plugins.eve_tools.utils.tools import MSG_TYPE_VALUE, MSG_TYPE_KEY_VALUE, MSG_TYPE_ERROR
-
+from src.plugins.eve_tools.utils.tenant.load_static import refresh_data
 common_func_map = {}
 full_common_func_map: dict = {}
 OM_FUNC_MAP = {}
@@ -40,6 +46,18 @@ TYPE_REF = {
 FUNC_OPERATOR_ON = 'open'
 FUNC_OPERATOR_OFF = 'close'
 FUNC_RELOAD = 'reload'
+FUNC_REFRESH = 'refresh'
+
+logger = logging.getLogger('eve_plugins')
+
+
+def init_logger():
+    """初始化日志"""
+    logger.setLevel(logging.INFO)
+    sh = logging.StreamHandler()
+    fmt = logging.Formatter(fmt="%(asctime)s - %(levelname)-9s - %(filename)-8s : %(lineno)s line - %(message)s")
+    sh.setFormatter(fmt)
+    logger.addHandler(sh)
 
 
 def init_mod():
@@ -48,6 +66,8 @@ def init_mod():
     load_om_function()
     # 重新生成方法列表
     reset_functions()
+    # 初始化日志
+    init_logger()
 
 
 def reset_functions():
@@ -88,6 +108,10 @@ def load_om_function():
                 await svip.finish(get_func_list())
             elif value == FUNC_RELOAD:
                 await svip.finish(reset_functions())
+            elif value == FUNC_REFRESH:
+                msg = refresh_data(logger=logger, reparse=True)
+                await svip.finish('ok')
+
         elif cmd_type == MSG_TYPE_KEY_VALUE:
             sub_cmd = cmd.get('cmd', '')
             value = cmd.get('value', '')
@@ -175,7 +199,12 @@ def load_function(item: dict):
             # 导入依赖包和入口函数
             module = importlib.import_module(PACKAGE_PATH + mod)
             function = getattr(module, func_name)
-            msg_reply = function(event, inputs)
+            # 捕获执行时发生的异常
+            try:
+                msg_reply = function(event, logger)
+            except Exception as e:
+                msg_reply = '%s执行发生异常\n' % name
+                msg_reply += e.args
             await matcher.finish(msg_reply)
 
         # 登记方法
